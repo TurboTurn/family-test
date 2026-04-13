@@ -52,10 +52,16 @@
           <div class="chart" id="chart"></div>
         </div>
         <div class="result-actions">
-          <button class="btn-share" onclick="shareResult()">📤 截图分享给朋友</button>
+          <button class="btn-share" onclick="shareImage()">🖼️ 生成分享图片</button>
+          <button class="btn-copy-link" onclick="copyLink()">🔗 复制结果链接</button>
           <button class="btn-retry" onclick="retryTest()">🔄 再测一次</button>
         </div>
-        <p class="result-tip">长按图片保存，分享到小红书/朋友圈</p>
+        <p class="result-tip">保存图片后分享到小红书/朋友圈</p>
+        <!-- 分享图片预览 -->
+        <div id="share-preview" style="display:none;margin-top:16px;">
+          <p style="font-size:13px;color:#888;text-align:center;margin-bottom:8px;">长按图片保存 👇</p>
+          <img id="share-img" style="width:100%;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.12);" />
+        </div>
       </div>
     </div>
   </div>

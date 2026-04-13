@@ -241,9 +241,160 @@ function renderChart() {
   }, 100)
 }
 
-// ===== 分享 =====
-function shareResult() {
-  showToast('📸 截图当前页面，分享到小红书或朋友圈吧！')
+// ===== 生成分享图片 =====
+function shareImage() {
+  const r = getCurrentResult()
+  if (!r) return
+
+  const canvas = document.createElement('canvas')
+  const dpr = window.devicePixelRatio || 2
+  const W = 750, H = 1080
+  canvas.width = W * dpr
+  canvas.height = H * dpr
+  canvas.style.width = W + 'px'
+  canvas.style.height = H + 'px'
+  const ctx = canvas.getContext('2d')
+  ctx.scale(dpr, dpr)
+
+  // 背景渐变
+  const grad = ctx.createLinearGradient(0, 0, W, H)
+  grad.addColorStop(0, '#ede0ff')
+  grad.addColorStop(1, '#e8f4ff')
+  ctx.fillStyle = grad
+  ctx.fillRect(0, 0, W, H)
+
+  // 卡片
+  ctx.fillStyle = '#fff'
+  roundRect(ctx, 40, 60, W - 80, H - 160, 32)
+  ctx.fill()
+
+  // emoji
+  ctx.font = '80px serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(r.badge, W / 2, 220)
+
+  // 标题
+  ctx.fillStyle = '#5a3d9a'
+  ctx.font = 'bold 52px PingFang SC, sans-serif'
+  ctx.fillText(r.type, W / 2, 310)
+
+  // 分割线
+  ctx.strokeStyle = 'rgba(124,92,191,0.2)'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(120, 350)
+  ctx.lineTo(W - 120, 350)
+  ctx.stroke()
+
+  // quote
+  ctx.fillStyle = '#7c5cbf'
+  ctx.font = 'italic 30px PingFang SC, sans-serif'
+  wrapText(ctx, r.quote, W / 2, 410, W - 160, 46)
+
+  // tags
+  const tagY = 560
+  const tagColors = ['rgba(124,92,191,0.12)', 'rgba(124,92,191,0.18)', 'rgba(124,92,191,0.1)', 'rgba(124,92,191,0.15)']
+  let tagX = 0
+  const tagWidths = r.tags.map(t => measureTag(ctx, t))
+  const totalW = tagWidths.reduce((a, b) => a + b + 16, 0) - 16
+  tagX = (W - totalW) / 2
+  r.tags.forEach((tag, i) => {
+    const tw = tagWidths[i]
+    ctx.fillStyle = tagColors[i % tagColors.length]
+    roundRect(ctx, tagX, tagY, tw, 52, 26)
+    ctx.fill()
+    ctx.fillStyle = '#7c5cbf'
+    ctx.font = '26px PingFang SC, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(tag, tagX + tw / 2, tagY + 34)
+    tagX += tw + 16
+  })
+
+  // 底部提示
+  ctx.fillStyle = '#bbb'
+  ctx.font = '24px PingFang SC, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText('你被原生家庭影响了多深？', W / 2, H - 130)
+  ctx.font = '22px PingFang SC, sans-serif'
+  ctx.fillStyle = '#ccc'
+  ctx.fillText('扫码测测你的类型 ↓', W / 2, H - 95)
+
+  // 输出图片
+  const dataUrl = canvas.toDataURL('image/png')
+  const imgEl = document.getElementById('share-img')
+  imgEl.src = dataUrl
+  document.getElementById('share-preview').style.display = 'block'
+  document.getElementById('share-preview').scrollIntoView({ behavior: 'smooth' })
+
+  // 同时尝试原生分享
+  canvas.toBlob(blob => {
+    if (navigator.share && blob) {
+      const file = new File([blob], 'result.png', { type: 'image/png' })
+      navigator.share({ files: [file], title: r.type, text: r.quote }).catch(() => {})
+    }
+  })
+}
+
+function measureTag(ctx, text) {
+  ctx.font = '26px PingFang SC, sans-serif'
+  return ctx.measureText(text).width + 48
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  ctx.lineTo(x + r, y + h)
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+  ctx.lineTo(x, y + r)
+  ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
+}
+
+function wrapText(ctx, text, x, y, maxW, lineH) {
+  const chars = text.split('')
+  let line = ''
+  let cy = y
+  for (let i = 0; i < chars.length; i++) {
+    const test = line + chars[i]
+    if (ctx.measureText(test).width > maxW && line !== '') {
+      ctx.fillText(line, x, cy)
+      line = chars[i]
+      cy += lineH
+    } else {
+      line = test
+    }
+  }
+  ctx.fillText(line, x, cy)
+}
+
+// ===== 复制结果链接 =====
+function copyLink() {
+  const top = getCurrentResultKey()
+  const url = window.location.origin + window.location.pathname + '?result=' + top
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('✅ 链接已复制，发给朋友来测吧！')
+  }).catch(() => {
+    // fallback
+    const input = document.createElement('input')
+    input.value = url
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+    showToast('✅ 链接已复制，发给朋友来测吧！')
+  })
+}
+
+function getCurrentResultKey() {
+  return Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0]
+}
+
+function getCurrentResult() {
+  return results[getCurrentResultKey()]
 }
 
 function showToast(msg) {
@@ -265,10 +416,29 @@ function retryTest() {
 
 // ===== 挂载到 window，确保 onclick 可访问 =====
 window.startTest = startTest
-window.shareResult = shareResult
+window.shareImage = shareImage
+window.copyLink = copyLink
 window.retryTest = retryTest
 
 // ===== 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
   updateCount()
+
+  // 读取 URL 参数，直接展示对应结果（分享链接落地）
+  const params = new URLSearchParams(window.location.search)
+  const resultKey = params.get('result')
+  if (resultKey && results[resultKey]) {
+    scores = { A: 0, B: 0, C: 0, D: 0 }
+    scores[resultKey] = 10
+    showResult()
+    setTimeout(() => {
+      const wrap = document.querySelector('.result-wrap')
+      if (wrap) {
+        const tip = document.createElement('div')
+        tip.style.cssText = 'text-align:center;font-size:13px;color:#a07ed6;margin-bottom:16px;background:rgba(124,92,191,0.08);padding:10px 16px;border-radius:12px;'
+        tip.textContent = '朋友分享了他的测试结果 · 点下方按钮测测你自己'
+        wrap.insertBefore(tip, wrap.firstChild)
+      }
+    }, 100)
+  }
 })
