@@ -11,13 +11,51 @@
     <!-- 首页 -->
     <div id="page-home" class="page active">
       <div class="home-wrap">
+        <!-- 悬浮装饰 emoji -->
+        <div class="floating-emojis">
+          <span class="float-item" style="--delay:0s;--x:10%;--y:15%">🧸</span>
+          <span class="float-item" style="--delay:1.2s;--x:85%;--y:10%">🪞</span>
+          <span class="float-item" style="--delay:0.6s;--x:75%;--y:80%">🦋</span>
+          <span class="float-item" style="--delay:1.8s;--x:15%;--y:75%">🌿</span>
+          <span class="float-item" style="--delay:2.4s;--x:50%;--y:5%">🔗</span>
+          <span class="float-item" style="--delay:0.3s;--x:90%;--y:50%">💭</span>
+        </div>
+
         <div class="home-emoji">🌱</div>
         <h1 class="home-title">你身上，<br/>有多少父母的影子</h1>
         <p class="home-desc">10个问题，测出原生家庭对你的影响<br/>也许你早就知道，也许你从未意识到</p>
+
+        <!-- 结果类型预告标签 -->
+        <div class="result-preview-tags">
+          <span class="preview-tag">🦋 自我重建者</span>
+          <span class="preview-tag">🪞 隐性承袭者</span>
+          <span class="preview-tag">🌿 和解共存者</span>
+          <span class="preview-tag">🔗 深度捆绑者</span>
+          <p class="preview-hint">你会是哪一种？</p>
+        </div>
+
         <div class="home-stats">已有 <span id="test-count">12,847</span> 人完成测试</div>
-        <button class="btn-start" onclick="startTest()">开始测试</button>
+
+        <!-- 热门评论钩子 -->
+        <div class="hot-comments">
+          <div class="comment-scroll" id="comment-scroll">
+            <div class="comment-item">"测完沉默了好久…太准了" <span class="comment-author">— 小红书 @是糖不是盐</span></div>
+            <div class="comment-item">"看到结果的那一刻眼眶红了" <span class="comment-author">— 小红书 @深夜树洞</span></div>
+            <div class="comment-item">"发给我妈看，她说她也想测" <span class="comment-author">— 小红书 @橘子味苏打</span></div>
+            <div class="comment-item">"原来我一直在无意识地复制…" <span class="comment-author">— 小红书 @月亮邮递员</span></div>
+            <div class="comment-item">"测完和朋友讨论了一晚上" <span class="comment-author">— 小红书 @芝士就是力量</span></div>
+          </div>
+        </div>
+
+        <button class="btn-start" onclick="startTest()">
+          <span class="btn-text">开始测试</span>
+          <span class="btn-arrow">→</span>
+        </button>
         <p class="home-tip">测试仅供娱乐参考，请理性看待结果</p>
       </div>
+
+      <!-- 实时滚动通知 -->
+      <div class="live-ticker" id="live-ticker"></div>
     </div>
 
     <!-- 答题页 -->

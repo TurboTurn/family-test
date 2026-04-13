@@ -420,9 +420,61 @@ window.shareImage = shareImage
 window.copyLink = copyLink
 window.retryTest = retryTest
 
+// ===== 实时滚动通知（从众效应） =====
+const tickerNames = [
+  '小明', '阿花', '大壮', '小美', '阿杰', '小雨', '思思', '浩然',
+  '晓晓', '子涵', '一诺', '梓萱', '宇轩', '可可', '乐乐', '安安',
+  '豆豆', '果果', '糖糖', '星星', '月月', '甜甜', '暖暖', '默默'
+]
+const tickerResults = ['自我重建者 🦋', '隐性承袭者 🪞', '和解共存者 🌿', '深度捆绑者 🔗']
+const tickerCities = ['北京', '上海', '广州', '深圳', '杭州', '成都', '武汉', '南京', '重庆', '长沙', '西安', '苏州']
+
+function startLiveTicker() {
+  const ticker = document.getElementById('live-ticker')
+  if (!ticker) return
+
+  function showTicker() {
+    // 只在首页显示
+    if (!document.getElementById('page-home').classList.contains('active')) return
+
+    const name = tickerNames[Math.floor(Math.random() * tickerNames.length)]
+    const city = tickerCities[Math.floor(Math.random() * tickerCities.length)]
+    const result = tickerResults[Math.floor(Math.random() * tickerResults.length)]
+    const mins = Math.floor(Math.random() * 5) + 1
+
+    const item = document.createElement('div')
+    item.className = 'ticker-item'
+    item.textContent = `📍${city}的${name} ${mins}分钟前测出「${result}」`
+    ticker.innerHTML = ''
+    ticker.appendChild(item)
+
+    setTimeout(() => { if (item.parentNode) item.remove() }, 3200)
+  }
+
+  // 首次延迟2秒显示
+  setTimeout(() => {
+    showTicker()
+    setInterval(showTicker, 5000)
+  }, 2000)
+}
+
+// ===== 评论无限循环 =====
+function startCommentLoop() {
+  const scroll = document.getElementById('comment-scroll')
+  if (!scroll) return
+  // 克隆第一条到末尾实现无缝循环
+  const first = scroll.children[0]
+  if (first) {
+    const clone = first.cloneNode(true)
+    scroll.appendChild(clone)
+  }
+}
+
 // ===== 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
   updateCount()
+  startLiveTicker()
+  startCommentLoop()
 
   // 读取 URL 参数，直接展示对应结果（分享链接落地）
   const params = new URLSearchParams(window.location.search)
