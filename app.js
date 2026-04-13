@@ -310,14 +310,39 @@ function shareImage() {
     tagX += tw + 16
   })
 
-  // 底部提示
+  // 底部区域：二维码 + 提示文字
+  const qrUrl = window.location.origin + window.location.pathname
+  const qr = qrcode(0, 'M')
+  qr.addData(qrUrl)
+  qr.make()
+
+  // 绘制二维码到临时 canvas，再画到主 canvas
+  const qrSize = 120
+  const qrModules = qr.getModuleCount()
+  const cellSize = qrSize / qrModules
+  const qrX = W / 2 - qrSize / 2
+  const qrY = H - 240
+
+  // 二维码白色背景（带圆角）
+  ctx.fillStyle = '#fff'
+  roundRect(ctx, qrX - 12, qrY - 12, qrSize + 24, qrSize + 24, 12)
+  ctx.fill()
+
+  // 绘制二维码模块
+  ctx.fillStyle = '#5a3d9a'
+  for (let row = 0; row < qrModules; row++) {
+    for (let col = 0; col < qrModules; col++) {
+      if (qr.isDark(row, col)) {
+        ctx.fillRect(qrX + col * cellSize, qrY + row * cellSize, cellSize + 0.5, cellSize + 0.5)
+      }
+    }
+  }
+
+  // 底部提示文字
   ctx.fillStyle = '#bbb'
-  ctx.font = '24px PingFang SC, sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText('你被原生家庭影响了多深？', W / 2, H - 130)
   ctx.font = '22px PingFang SC, sans-serif'
-  ctx.fillStyle = '#ccc'
-  ctx.fillText('扫码测测你的类型 ↓', W / 2, H - 95)
+  ctx.textAlign = 'center'
+  ctx.fillText('扫码测测你的类型', W / 2, qrY + qrSize + 36)
 
   // 输出图片
   const dataUrl = canvas.toDataURL('image/png')
