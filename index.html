@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>你被原生家庭影响了多深？</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 首页 -->
+    <div id="page-home" class="page active">
+      <div class="home-wrap">
+        <div class="home-emoji">🌱</div>
+        <h1 class="home-title">你身上，<br/>有多少父母的影子</h1>
+        <p class="home-desc">10个问题，测出原生家庭对你的影响<br/>也许你早就知道，也许你从未意识到</p>
+        <div class="home-stats">已有 <span id="test-count">12,847</span> 人完成测试</div>
+        <button class="btn-start" onclick="startTest()">开始测试</button>
+        <p class="home-tip">测试仅供娱乐参考，请理性看待结果</p>
+      </div>
+    </div>
+
+    <!-- 答题页 -->
+    <div id="page-quiz" class="page">
+      <div class="quiz-header">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-text"><span id="current-q">1</span> / 10</div>
+      </div>
+      <div class="quiz-body">
+        <div class="question-wrap">
+          <p class="question-text" id="question-text"></p>
+          <div class="options" id="options"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果页 -->
+    <div id="page-result" class="page">
+      <div class="result-wrap">
+        <div class="result-card" id="result-card">
+          <div class="result-badge" id="result-badge"></div>
+          <h2 class="result-type" id="result-type"></h2>
+          <p class="result-quote" id="result-quote"></p>
+          <div class="result-divider"></div>
+          <p class="result-desc" id="result-desc"></p>
+          <div class="result-tags" id="result-tags"></div>
+        </div>
+        <div class="result-insight">
+          <h3>你的影响分布</h3>
+          <div class="chart" id="chart"></div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-share" onclick="shareResult()">📤 截图分享给朋友</button>
+          <button class="btn-retry" onclick="retryTest()">🔄 再测一次</button>
+        </div>
+        <p class="result-tip">长按图片保存，分享到小红书/朋友圈</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
